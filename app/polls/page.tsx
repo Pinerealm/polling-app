@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { PollCard } from "@/components/polls/poll-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Poll } from "@/types"
-import { Plus, Search, Filter } from "lucide-react"
+import { Plus, Search, Filter, CheckCircle } from "lucide-react"
+import { PageHeader } from "@/components/navigation/page-header"
 
 // Mock data for demonstration
 const mockPolls: Poll[] = [
@@ -47,6 +49,24 @@ export default function PollsPage() {
   const [polls, setPolls] = useState<Poll[]>(mockPolls)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterActive, setFilterActive] = useState(true)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const searchParams = useSearchParams()
+
+  // Check for success message on component mount
+  useEffect(() => {
+    if (searchParams.get('created') === 'true') {
+      setShowSuccessMessage(true)
+      // Remove the query parameter from URL without page reload
+      const url = new URL(window.location.href)
+      url.searchParams.delete('created')
+      window.history.replaceState({}, '', url.toString())
+      
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        setShowSuccessMessage(false)
+      }, 5000)
+    }
+  }, [searchParams])
 
   const filteredPolls = polls.filter(poll => {
     const matchesSearch = poll.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,8 +89,25 @@ export default function PollsPage() {
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
+          <PageHeader 
+            title="All Polls"
+            description="Browse and vote on polls created by the community"
+            backHref="/dashboard"
+            backLabel="Back to Dashboard"
+          />
+          
+          {/* Success Message */}
+          {showSuccessMessage && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-md flex items-center gap-3">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="text-sm font-medium text-green-800">Poll created successfully!</p>
+                <p className="text-sm text-green-600">Your poll is now live and ready for votes.</p>
+              </div>
+            </div>
+          )}
+          
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-foreground">All Polls</h1>
             <Button asChild>
               <a href="/polls/create">
                 <Plus className="h-4 w-4 mr-2" />

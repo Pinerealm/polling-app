@@ -5,19 +5,37 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, X, Calendar } from "lucide-react"
-import { createPoll } from "@/lib/actions/polls"
+import { updatePoll } from "@/lib/actions/polls"
+import { useRouter } from "next/navigation"
 
-export function CreatePollForm() {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [options, setOptions] = useState(["", ""])
-  const [allowMultipleVotes, setAllowMultipleVotes] = useState(false)
-  const [expiresAt, setExpiresAt] = useState("")
+interface EditPollFormProps {
+  poll: {
+    id: string
+    title: string
+    description: string | null
+    allow_multiple_votes: boolean
+    expires_at: string | null
+    poll_options: Array<{
+      id: string
+      text: string
+    }>
+  }
+}
+
+export function EditPollForm({ poll }: EditPollFormProps) {
+  const [title, setTitle] = useState(poll.title)
+  const [description, setDescription] = useState(poll.description || "")
+  const [options, setOptions] = useState(poll.poll_options.map(opt => ({ id: opt.id, text: opt.text })))
+  const [allowMultipleVotes, setAllowMultipleVotes] = useState(poll.allow_multiple_votes)
+  const [expiresAt, setExpiresAt] = useState(
+    poll.expires_at ? new Date(poll.expires_at).toISOString().slice(0, 16) : ""
+  )
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   const addOption = () => {
-    setOptions([...options, ""])
+    setOptions([...options, { id: `new-${Date.now()}`, text: "" }])
   }
 
   const removeOption = (index: number) => {
@@ -28,7 +46,7 @@ export function CreatePollForm() {
 
   const updateOption = (index: number, value: string) => {
     const newOptions = [...options]
-    newOptions[index] = value
+    newOptions[index] = { ...newOptions[index], text: value }
     setOptions(newOptions)
   }
 
@@ -36,7 +54,7 @@ export function CreatePollForm() {
     e.preventDefault()
     setError(null)
     
-    const validOptions = options.filter(option => option.trim() !== "")
+    const validOptions = options.filter(option => option.text.trim() !== "")
     if (validOptions.length < 2) {
       setError("Please provide at least 2 options")
       return
@@ -50,6 +68,7 @@ export function CreatePollForm() {
     startTransition(async () => {
       try {
         const formData = new FormData()
+        formData.append("pollId", poll.id)
         formData.append("title", title.trim())
         formData.append("description", description.trim())
         formData.append("allowMultipleVotes", allowMultipleVotes ? "on" : "off")
@@ -58,12 +77,18 @@ export function CreatePollForm() {
         }
         
         validOptions.forEach((option, index) => {
-          formData.append(`option-${index}`, option)
+          formData.append(`option-${index}`, option.text)
+          if (option.id.startsWith('new-')) {
+            formData.append(`new-option-${index}`, "true")
+          } else {
+            formData.append(`option-id-${index}`, option.id)
+          }
         })
 
-        await createPoll(formData)
+        await updatePoll(formData)
+        router.push("/dashboard")
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create poll")
+        setError(err instanceof Error ? err.message : "Failed to update poll")
       }
     })
   }
@@ -71,9 +96,9 @@ export function CreatePollForm() {
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle className="text-card-foreground">Create New Poll</CardTitle>
+        <CardTitle className="text-card-foreground">Edit Poll</CardTitle>
         <CardDescription className="text-muted-foreground">
-          Create a new poll for your community to vote on
+          Update your poll details and options
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -115,11 +140,11 @@ export function CreatePollForm() {
               Poll Options *
             </label>
             {options.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
+              <div key={option.id} className="flex items-center space-x-2">
                 <Input
                   type="text"
                   placeholder={`Option ${index + 1}`}
-                  value={option}
+                  value={option.text}
                   onChange={(e) => updateOption(index, e.target.value)}
                   required
                 />
@@ -177,9 +202,19 @@ export function CreatePollForm() {
             </div>
           </div>
           
-          <Button type="submit" className="w-full" disabled={isPending}>
-            {isPending ? "Creating..." : "Create Poll"}
-          </Button>
+          <div className="flex space-x-4">
+            <Button type="submit" className="flex-1" disabled={isPending}>
+              {isPending ? "Updating..." : "Update Poll"}
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => router.push("/dashboard")}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

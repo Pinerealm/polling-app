@@ -1,30 +1,21 @@
 import { CreatePollForm } from "@/components/forms/create-poll-form"
 import ProtectedRoute from "@/components/auth/protected-route"
+import { PageHeader } from "@/components/navigation/page-header"
 
 export default function CreatePollPage() {
-  const handleCreatePoll = async (data: any) => {
-    // TODO: Implement poll creation logic
-    console.log("Creating poll:", data)
-    
-    // Here you would typically:
-    // 1. Send data to your API
-    // 2. Handle success/error responses
-    // 3. Redirect to the new poll or polls list
-  }
-
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground">Create New Poll</h1>
-            <p className="mt-2 text-muted-foreground">
-              Create engaging polls for your community to vote on
-            </p>
-          </div>
+          <PageHeader 
+            title="Create New Poll"
+            description="Create engaging polls for your community to vote on"
+            backHref="/dashboard"
+            backLabel="Back to Dashboard"
+          />
           
           <div className="flex justify-center">
-            <CreatePollForm onSubmit={handleCreatePoll} />
+            <CreatePollForm />
           </div>
         </div>
       </div>

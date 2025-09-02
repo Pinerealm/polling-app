@@ -1,61 +1,72 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Poll } from "@/types"
 import { BarChart3, Users, TrendingUp, Plus, Eye, Edit, Trash2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { PollActions } from "@/components/polls/poll-actions"
+import Link from "next/link"
 
-// Mock data for demonstration
-const mockUserPolls: Poll[] = [
-  {
-    id: "1",
-    title: "What's your favorite programming language?",
-    description: "Let's see what the community prefers for their next project",
-    options: [
-      { id: "1-1", text: "JavaScript/TypeScript", votes: 45, pollId: "1" },
-      { id: "1-2", text: "Python", votes: 32, pollId: "1" },
-      { id: "1-3", text: "Rust", votes: 18, pollId: "1" },
-      { id: "1-4", text: "Go", votes: 12, pollId: "1" }
-    ],
-    createdBy: "user1",
-    isActive: true,
-    allowMultipleVotes: false,
-    createdAt: new Date("2024-01-15"),
-    updatedAt: new Date("2024-01-15")
-  }
-]
-
-export default function DashboardPage() {
-  const [userPolls, setUserPolls] = useState<Poll[]>(mockUserPolls)
-  const [totalVotes, setTotalVotes] = useState(0)
-  const [activePolls, setActivePolls] = useState(0)
-
-  useEffect(() => {
-    // Calculate stats
-    const votes = userPolls.reduce((sum, poll) => 
-      sum + poll.options.reduce((pollSum, option) => pollSum + option.votes, 0), 0
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  
+  // Get the current user
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  
+  if (authError || !user) {
+    return (
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground">Please sign in to view your dashboard</h1>
+          </div>
+        </div>
+      </div>
     )
-    const active = userPolls.filter(poll => poll.isActive).length
-    
-    setTotalVotes(votes)
-    setActivePolls(active)
-  }, [userPolls])
-
-  const handleViewPoll = (pollId: string) => {
-    // TODO: Navigate to poll detail page
-    console.log("Viewing poll:", pollId)
   }
 
-  const handleEditPoll = (pollId: string) => {
-    // TODO: Navigate to poll edit page
-    console.log("Editing poll:", pollId)
+  // Fetch user's polls with options and vote counts
+  const { data: userPolls, error: pollsError } = await supabase
+    .from("polls")
+    .select(`
+      *,
+      poll_options (*)
+    `)
+    .eq("created_by", user.id)
+    .order("created_at", { ascending: false })
+
+  if (pollsError) {
+    console.error("Error fetching user polls:", pollsError)
   }
 
-  const handleDeletePoll = (pollId: string) => {
-    // TODO: Implement delete confirmation and logic
-    console.log("Deleting poll:", pollId)
-  }
+  // Get vote counts for each poll
+  const pollsWithVotes = await Promise.all(
+    (userPolls || []).map(async (poll) => {
+      const { data: votes } = await supabase
+        .from("votes")
+        .select("option_id")
+        .eq("poll_id", poll.id)
+
+      const voteCounts = votes?.reduce((acc, vote) => {
+        acc[vote.option_id] = (acc[vote.option_id] || 0) + 1
+        return acc
+      }, {} as Record<string, number>) || {}
+
+      const totalVotes = Object.values(voteCounts).reduce((sum, count) => sum + count, 0)
+      const isExpired = poll.expires_at && new Date(poll.expires_at) < new Date()
+      const isActive = poll.status === 'active' && !isExpired
+
+      return {
+        ...poll,
+        totalVotes,
+        isActive,
+        voteCounts
+      }
+    })
+  )
+
+  // Calculate stats
+  const totalVotes = pollsWithVotes.reduce((sum, poll) => sum + poll.totalVotes, 0)
+  const activePolls = pollsWithVotes.filter(poll => poll.isActive).length
 
   return (
     <div className="py-8">
@@ -76,7 +87,7 @@ export default function DashboardPage() {
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-card-foreground">{userPolls.length}</div>
+              <div className="text-2xl font-bold text-card-foreground">{pollsWithVotes.length}</div>
               <p className="text-xs text-muted-foreground">
                 Created by you
               </p>
@@ -121,13 +132,13 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="flex space-x-4">
               <Button asChild>
-                <a href="/polls/create">
+                <Link href="/polls/create">
                   <Plus className="h-4 w-4 mr-2" />
                   Create New Poll
-                </a>
+                </Link>
               </Button>
               <Button variant="outline" asChild>
-                <a href="/polls">Browse All Polls</a>
+                <Link href="/polls">Browse All Polls</Link>
               </Button>
             </CardContent>
           </Card>
@@ -138,11 +149,11 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-foreground">Your Polls</h2>
             <Button variant="outline" size="sm" asChild>
-              <a href="/polls">View All</a>
+              <Link href="/polls">View All</Link>
             </Button>
           </div>
 
-          {userPolls.length === 0 ? (
+          {pollsWithVotes.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
                 <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -151,13 +162,13 @@ export default function DashboardPage() {
                   Create your first poll to start engaging with your community
                 </p>
                 <Button asChild>
-                  <a href="/polls/create">Create Your First Poll</a>
+                  <Link href="/polls/create">Create Your First Poll</Link>
                 </Button>
               </CardContent>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userPolls.map((poll) => (
+              {pollsWithVotes.map((poll) => (
                 <Card key={poll.id} className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <CardTitle className="text-lg text-card-foreground">{poll.title}</CardTitle>
@@ -172,48 +183,24 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between">
                         <span>Total votes:</span>
                         <span className="font-medium text-card-foreground">
-                          {poll.options.reduce((sum, option) => sum + option.votes, 0)}
+                          {poll.totalVotes}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span>Status:</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          poll.isActive 
-                            ? 'status-active' 
-                            : 'status-inactive'
-                        }`}>
+                        <Badge variant={poll.isActive ? "default" : "secondary"}>
                           {poll.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Options:</span>
+                        <span className="font-medium text-card-foreground">
+                          {poll.poll_options.length}
                         </span>
                       </div>
                     </div>
                     
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => handleViewPoll(poll.id)}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex-1"
-                        onClick={() => handleEditPoll(poll.id)}
-                      >
-                        <Edit className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        onClick={() => handleDeletePoll(poll.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    <PollActions pollId={poll.id} />
                   </CardContent>
                 </Card>
               ))}
