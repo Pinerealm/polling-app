@@ -20,14 +20,14 @@ export function PollCard({ poll, onVote, onView }: PollCardProps) {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-lg text-gray-900">{poll.title}</CardTitle>
+            <CardTitle className="text-lg text-card-foreground">{poll.title}</CardTitle>
             {poll.description && (
-              <CardDescription className="line-clamp-2 text-gray-700">
+              <CardDescription className="line-clamp-2 text-muted-foreground">
                 {poll.description}
               </CardDescription>
             )}
           </div>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <Users className="h-4 w-4" />
             <span>{totalVotes} votes</span>
           </div>
@@ -38,20 +38,20 @@ export function PollCard({ poll, onVote, onView }: PollCardProps) {
         <div className="space-y-2">
           {poll.options.slice(0, 3).map((option) => (
             <div key={option.id} className="flex items-center justify-between">
-              <span className="text-sm text-gray-800 truncate flex-1">{option.text}</span>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm text-card-foreground truncate flex-1">{option.text}</span>
+              <span className="text-sm font-medium text-muted-foreground">
                 {totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0}%
               </span>
             </div>
           ))}
           {poll.options.length > 3 && (
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               +{poll.options.length - 3} more options
             </span>
           )}
         </div>
         
-        <div className="flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">
             <Calendar className="h-4 w-4" />
             <span>
@@ -63,7 +63,7 @@ export function PollCard({ poll, onVote, onView }: PollCardProps) {
           </div>
           
           {poll.allowMultipleVotes && (
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">
               Multiple votes allowed
             </span>
           )}

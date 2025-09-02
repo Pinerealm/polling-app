@@ -62,8 +62,8 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="mt-2 text-gray-700">
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="mt-2 text-muted-foreground">
             Welcome back! Here's an overview of your polling activity.
           </p>
         </div>
@@ -72,12 +72,12 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-900">Total Polls</CardTitle>
-              <BarChart3 className="h-4 w-4 text-gray-500" />
+              <CardTitle className="text-sm font-medium text-card-foreground">Total Polls</CardTitle>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{userPolls.length}</div>
-              <p className="text-xs text-gray-600">
+              <div className="text-2xl font-bold text-card-foreground">{userPolls.length}</div>
+              <p className="text-xs text-muted-foreground">
                 Created by you
               </p>
             </CardContent>
@@ -85,12 +85,12 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-900">Total Votes</CardTitle>
-              <Users className="h-4 w-4 text-gray-500" />
+              <CardTitle className="text-sm font-medium text-card-foreground">Total Votes</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{totalVotes}</div>
-              <p className="text-xs text-gray-600">
+              <div className="text-2xl font-bold text-card-foreground">{totalVotes}</div>
+              <p className="text-xs text-muted-foreground">
                 Across all your polls
               </p>
             </CardContent>
@@ -98,12 +98,12 @@ export default function DashboardPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-900">Active Polls</CardTitle>
-              <TrendingUp className="h-4 w-4 text-gray-500" />
+              <CardTitle className="text-sm font-medium text-card-foreground">Active Polls</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{activePolls}</div>
-              <p className="text-xs text-gray-600">
+              <div className="text-2xl font-bold text-card-foreground">{activePolls}</div>
+              <p className="text-xs text-muted-foreground">
                 Currently running
               </p>
             </CardContent>
@@ -114,8 +114,8 @@ export default function DashboardPage() {
         <div className="mb-8">
           <Card>
             <CardHeader>
-              <CardTitle className="text-gray-900">Quick Actions</CardTitle>
-              <CardDescription className="text-gray-700">
+              <CardTitle className="text-card-foreground">Quick Actions</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Create a new poll or manage your existing ones
               </CardDescription>
             </CardHeader>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
         {/* User's Polls */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Your Polls</h2>
+            <h2 className="text-xl font-semibold text-foreground">Your Polls</h2>
             <Button variant="outline" size="sm" asChild>
               <a href="/polls">View All</a>
             </Button>
@@ -145,9 +145,9 @@ export default function DashboardPage() {
           {userPolls.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No polls yet</h3>
-                <p className="text-gray-700 mb-4">
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-card-foreground mb-2">No polls yet</h3>
+                <p className="text-muted-foreground mb-4">
                   Create your first poll to start engaging with your community
                 </p>
                 <Button asChild>
@@ -160,18 +160,18 @@ export default function DashboardPage() {
               {userPolls.map((poll) => (
                 <Card key={poll.id} className="hover:shadow-md transition-shadow">
                   <CardHeader>
-                    <CardTitle className="text-lg text-gray-900">{poll.title}</CardTitle>
+                    <CardTitle className="text-lg text-card-foreground">{poll.title}</CardTitle>
                     {poll.description && (
-                      <CardDescription className="line-clamp-2 text-gray-700">
+                      <CardDescription className="line-clamp-2 text-muted-foreground">
                         {poll.description}
                       </CardDescription>
                     )}
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="text-sm text-gray-700">
+                    <div className="text-sm text-muted-foreground">
                       <div className="flex items-center justify-between">
                         <span>Total votes:</span>
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-card-foreground">
                           {poll.options.reduce((sum, option) => sum + option.votes, 0)}
                         </span>
                       </div>
@@ -179,8 +179,8 @@ export default function DashboardPage() {
                         <span>Status:</span>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           poll.isActive 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'status-active' 
+                            : 'status-inactive'
                         }`}>
                           {poll.isActive ? 'Active' : 'Inactive'}
                         </span>

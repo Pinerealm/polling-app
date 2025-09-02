@@ -14,11 +14,11 @@ export default function Home() {
             </div>
           </div>
           
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <h1 className="text-5xl font-bold text-foreground mb-6">
             Create and Share Polls
           </h1>
           
-          <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Build engaging polls for your community. Get real-time results, 
             share insights, and make data-driven decisions together.
           </p>
@@ -44,10 +44,10 @@ export default function Home() {
       <div className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
               Everything you need for great polls
             </h2>
-            <p className="text-lg text-gray-700">
+            <p className="text-lg text-muted-foreground">
               Powerful features to create engaging and insightful polls
             </p>
           </div>
@@ -58,8 +58,8 @@ export default function Home() {
                 <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <Plus className="h-8 w-8 text-blue-600" />
                 </div>
-                <CardTitle className="text-gray-900">Easy Creation</CardTitle>
-                <CardDescription className="text-gray-700 leading-relaxed">
+                <CardTitle className="text-card-foreground">Easy Creation</CardTitle>
+                <CardDescription className="text-muted-foreground leading-relaxed">
                   Create polls in minutes with our intuitive interface. 
                   Add multiple options, set expiration dates, and customize settings.
                 </CardDescription>
@@ -71,8 +71,8 @@ export default function Home() {
                 <div className="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <Users className="h-8 w-8 text-green-600" />
                 </div>
-                <CardTitle className="text-gray-900">Community Engagement</CardTitle>
-                <CardDescription className="text-gray-700 leading-relaxed">
+                <CardTitle className="text-card-foreground">Community Engagement</CardTitle>
+                <CardDescription className="text-muted-foreground leading-relaxed">
                   Share polls with your community and get real-time results. 
                   See how people vote and engage with your content.
                 </CardDescription>
@@ -84,8 +84,8 @@ export default function Home() {
                 <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                   <BarChart3 className="h-8 w-8 text-purple-600" />
                 </div>
-                <CardTitle className="text-gray-900">Rich Analytics</CardTitle>
-                <CardDescription className="text-gray-700 leading-relaxed">
+                <CardTitle className="text-card-foreground">Rich Analytics</CardTitle>
+                <CardDescription className="text-muted-foreground leading-relaxed">
                   Get detailed insights with charts, percentages, and voting trends. 
                   Make informed decisions based on real data.
                 </CardDescription>
@@ -96,12 +96,12 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div className="py-20 px-4 bg-white">
+      <div className="py-20 px-4 bg-card">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
             Ready to get started?
           </h2>
-          <p className="text-lg text-gray-700 mb-8">
+          <p className="text-lg text-muted-foreground mb-8">
             Join thousands of users creating engaging polls every day
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

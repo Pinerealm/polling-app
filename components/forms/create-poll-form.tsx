@@ -58,15 +58,15 @@ export function CreatePollForm({ onSubmit, isLoading = false }: CreatePollFormPr
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle className="text-gray-900">Create New Poll</CardTitle>
-        <CardDescription className="text-gray-700">
+        <CardTitle className="text-card-foreground">Create New Poll</CardTitle>
+        <CardDescription className="text-muted-foreground">
           Create a new poll for your community to vote on
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="title" className="text-sm font-medium text-gray-900">
+            <label htmlFor="title" className="text-sm font-medium text-foreground">
               Poll Title *
             </label>
             <Input
@@ -80,7 +80,7 @@ export function CreatePollForm({ onSubmit, isLoading = false }: CreatePollFormPr
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="description" className="text-sm font-medium text-gray-900">
+            <label htmlFor="description" className="text-sm font-medium text-foreground">
               Description (optional)
             </label>
             <Input
@@ -93,7 +93,7 @@ export function CreatePollForm({ onSubmit, isLoading = false }: CreatePollFormPr
           </div>
           
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-900">
+            <label className="text-sm font-medium text-foreground">
               Poll Options *
             </label>
             {options.map((option, index) => (
@@ -138,17 +138,17 @@ export function CreatePollForm({ onSubmit, isLoading = false }: CreatePollFormPr
                 onChange={(e) => setAllowMultipleVotes(e.target.checked)}
                 className="rounded border-gray-300"
               />
-              <label htmlFor="multipleVotes" className="text-sm font-medium text-gray-900">
+              <label htmlFor="multipleVotes" className="text-sm font-medium text-foreground">
                 Allow multiple votes per person
               </label>
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="expiresAt" className="text-sm font-medium text-gray-900">
+              <label htmlFor="expiresAt" className="text-sm font-medium text-foreground">
                 Expiration Date (optional)
               </label>
               <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
+                <Calendar className="h-4 w-4 text-muted-foreground" />
                 <Input
                   id="expiresAt"
                   type="datetime-local"

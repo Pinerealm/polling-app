@@ -22,33 +22,33 @@ export default function DashboardLayout({
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         {/* Navigation Header */}
-        <nav className="bg-white shadow-sm border-b">
+        <nav className="bg-card shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-8">
                 <Link href="/dashboard" className="flex items-center space-x-2">
                   <BarChart3 className="h-8 w-8 text-blue-600" />
-                  <span className="text-xl font-bold text-gray-900">Polling App</span>
+                  <span className="text-xl font-bold text-foreground">Polling App</span>
                 </Link>
                 
                 <div className="hidden md:flex items-center space-x-6">
                   <Link 
                     href="/polls" 
-                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Browse Polls
                   </Link>
                   <Link 
                     href="/polls/create" 
-                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Create Poll
                   </Link>
                   <Link 
                     href="/dashboard" 
-                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                    className="text-muted-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium"
                   >
                     Dashboard
                   </Link>

@@ -66,11 +66,11 @@ export default function PollsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">All Polls</h1>
+            <h1 className="text-3xl font-bold text-foreground">All Polls</h1>
             <Button asChild>
               <a href="/polls/create">
                 <Plus className="h-4 w-4 mr-2" />
@@ -81,7 +81,7 @@ export default function PollsPage() {
           
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search polls..."
@@ -103,8 +103,8 @@ export default function PollsPage() {
         
         {filteredPolls.length === 0 ? (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No polls found</h3>
-            <p className="text-gray-700">
+            <h3 className="text-lg font-medium text-foreground mb-2">No polls found</h3>
+            <p className="text-muted-foreground">
               {searchTerm ? "Try adjusting your search terms" : "Be the first to create a poll!"}
             </p>
             {!searchTerm && (
