@@ -1,11 +1,30 @@
 "use client"
 
+import { useEffect } from 'react'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { useSupabase } from '@/components/providers/supabase-provider'
+import { useAuthRedirect } from '@/lib/hooks/use-auth-redirect'
 
 export default function AuthUI() {
   const { supabase } = useSupabase()
+  const { redirectAfterAuth, getRedirectUrl } = useAuthRedirect()
+
+  // Handle redirect after successful authentication
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Small delay to ensure the session is properly set
+          setTimeout(() => {
+            redirectAfterAuth()
+          }, 100)
+        }
+      }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [supabase, redirectAfterAuth])
 
   return (
     <div className="w-full max-w-md">
@@ -39,9 +58,6 @@ export default function AuthUI() {
               space: {
                 inputPadding: '12px',
                 buttonPadding: '12px 24px',
-                inputLabelMargin: '0 0 8px 0',
-                messageMargin: '8px 0 0 0',
-                anchorMargin: '16px 0 0 0',
               },
               fontSizes: {
                 baseBodySize: '14px',
@@ -68,7 +84,7 @@ export default function AuthUI() {
           },
         }}
         providers={[]}
-        redirectTo={`${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard`}
+        redirectTo={`${typeof window !== 'undefined' ? window.location.origin : ''}${getRedirectUrl()}`}
         showLinks={true}
         view="sign_in"
         localization={{

@@ -36,19 +36,26 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // If user is not signed in and the current path is not /login or /signup,
-  // redirect the user to /login
+  // redirect the user to /login with the current path as redirectTo
   if (!user && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/signup')) {
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = '/login'
+    const redirectUrl = new URL('/login', request.url)
+    redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }
 
   // If user is signed in and the current path is /login or /signup,
-  // redirect the user to /dashboard
+  // redirect the user to dashboard or the requested redirect URL
   if (user && (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup'))) {
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = '/dashboard'
-    return NextResponse.redirect(redirectUrl)
+    const redirectTo = request.nextUrl.searchParams.get('redirectTo')
+    
+    // Validate the redirect URL to prevent open redirects
+    if (redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//') && 
+        !redirectTo.startsWith('/login') && !redirectTo.startsWith('/signup')) {
+      return NextResponse.redirect(new URL(redirectTo, request.url))
+    }
+    
+    // Default redirect to dashboard
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return supabaseResponse
