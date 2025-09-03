@@ -315,3 +315,84 @@ export async function updatePoll(formData: FormData) {
     throw error
   }
 }
+
+export async function getPolls(searchTerm?: string, filterActive?: boolean) {
+  const supabase = await createClient()
+  
+  try {
+    // Build the query
+    let query = supabase
+      .from("polls")
+      .select(`
+        *,
+        poll_options (*),
+        profiles (name, email)
+      `)
+      .order("created_at", { ascending: false })
+
+    // Apply search filter
+    if (searchTerm?.trim()) {
+      query = query.or(`title.ilike.%${searchTerm.trim()}%,description.ilike.%${searchTerm.trim()}%`)
+    }
+
+    // Apply active filter
+    if (filterActive) {
+      query = query.eq("status", "active")
+    }
+
+    const { data: polls, error } = await query
+
+    if (error) {
+      console.error("Error fetching polls:", error)
+      throw new Error("Failed to fetch polls")
+    }
+
+    // Get vote counts for each poll
+    const pollsWithVotes = await Promise.all(
+      (polls || []).map(async (poll) => {
+        const { data: votes } = await supabase
+          .from("votes")
+          .select("option_id")
+          .eq("poll_id", poll.id)
+
+        // Calculate vote counts per option
+        const optionVoteCounts = votes?.reduce((acc, vote) => {
+          acc[vote.option_id] = (acc[vote.option_id] || 0) + 1
+          return acc
+        }, {} as Record<string, number>) || {}
+
+        // Transform poll options to include vote counts
+        const optionsWithVotes = poll.poll_options.map((option: { id: string; text: string }) => ({
+          id: option.id,
+          text: option.text,
+          votes: optionVoteCounts[option.id] || 0,
+          pollId: poll.id
+        }))
+
+        // Check if poll is expired
+        const isExpired = poll.expires_at && new Date(poll.expires_at) < new Date()
+        const isActive = poll.status === 'active' && !isExpired
+
+        return {
+          id: poll.id,
+          title: poll.title,
+          description: poll.description,
+          options: optionsWithVotes,
+          createdBy: poll.created_by,
+          isActive,
+          allowMultipleVotes: poll.allow_multiple_votes,
+          expiresAt: poll.expires_at ? new Date(poll.expires_at) : undefined,
+          createdAt: new Date(poll.created_at),
+          updatedAt: new Date(poll.updated_at),
+          creator: poll.profiles
+        }
+      })
+    )
+
+    return pollsWithVotes
+
+  } catch (error) {
+    console.error("Error fetching polls:", error)
+    throw error
+  }
+}

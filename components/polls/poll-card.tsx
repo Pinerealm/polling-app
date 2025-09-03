@@ -3,7 +3,7 @@
 import { Poll } from "@/types"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { BarChart3, Users, Calendar } from "lucide-react"
+import { Users, Calendar } from "lucide-react"
 
 interface PollCardProps {
   poll: Poll
